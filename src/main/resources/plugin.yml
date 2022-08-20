@@ -1,0 +1,14 @@
+name: VirtualShops
+version: '${project.version}'
+main: dev.jdog.virtualshops.VirtualShops
+api-version: 1.19
+commands:
+  shops:
+    description: Get a list of all the available shops on this server.
+    usage: /<command>
+  createShop:
+    description: Create a new shop.
+    usage: /<command>
+  addShopChest:
+    description: Add a chest to your shop.
+    usage: /<command>
