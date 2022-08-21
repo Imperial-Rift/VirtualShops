@@ -47,7 +47,15 @@ public class ViewShopMenu extends Menu {
 
         switch (e.getCurrentItem().getType()) {
             case GOLD_INGOT:
-                HashMap<Integer, ItemStack> notAdded = player.getInventory().addItem(new ItemStack(shop.getItem()));
+                if (player.getName().equals(shop.getOwner())) {
+                    player.sendMessage(ChatColor.DARK_RED + "You can't buy from your own shop!");
+                    player.closeInventory();
+                    break;
+                }
+                ItemStack item = new ItemStack(shop.getItem());
+                item.setAmount(shop.getAmount());
+                item.addEnchantments(shop.getEnchantments());
+                HashMap<Integer, ItemStack> notAdded = player.getInventory().addItem(item);
 
                 if (!notAdded.isEmpty()) {
                     player.sendMessage(ChatColor.DARK_RED + "Inventory full.");
@@ -63,7 +71,7 @@ public class ViewShopMenu extends Menu {
                     Integer itemsNeeded = shop.getAmount();
                     for (ItemStack is : items) {
                         if (is != null) {
-                            if (is.getType() == shop.getItem()) {
+                            if (is.getType() == shop.getItem() && is.getEnchantments() == shop.getEnchantments()) {
                                 if (itemsNeeded > 0) {
                                     if (itemsNeeded > is.getAmount()) {
                                         is.setAmount(0);
@@ -87,7 +95,8 @@ public class ViewShopMenu extends Menu {
 
                     player.sendMessage(ChatColor.GOLD + "Successfully bought " + ChatColor.WHITE + shop.getAmount() + " " +  shop.getItem().name().replace("_", " ") + ChatColor.GOLD + " from " + shop.getOwner());
 
-                    super.open();
+                    ViewShopMenu menu = new ViewShopMenu(playerMenuUtility);
+                    menu.open();
                 }
 
             case ARROW:
@@ -104,7 +113,7 @@ public class ViewShopMenu extends Menu {
 
 
         ItemStack display = new ItemStack(shop.getItem());
-//        display.addEnchantment(Enchantment.KNOCKBACK, 1);
+        display.addEnchantments(shop.getEnchantments());
 
         ItemStack buy = new ItemStack(Material.GOLD_INGOT);
         ItemMeta buyMeta = buy.getItemMeta();

@@ -87,7 +87,7 @@ public class ShopsMenu extends PaginatedMenu {
             for(int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= shops.size()) break;
-                if (shops.get(index) != null){
+                if (shops.get(index) != null) {
                     ///////////////////////////
 
                     //Create an item from our collection and place it into the inventory
@@ -97,24 +97,27 @@ public class ShopsMenu extends PaginatedMenu {
 ////
 ////                    playerMeta.getPersistentDataContainer().set(new NamespacedKey(VirtualShops.getPlugin(), "uuid"), PersistentDataType.STRING, players.get(index).getUniqueId().toString());
 //                    playerItem.setItemMeta(playerMeta);
+                    if (shops.get(index).getChestWorld() != null) {
+                        ItemStack item = new ItemStack(shops.get(index).getItem());
 
-                    ItemStack item = new ItemStack(shops.get(index).getItem());
-                    ItemMeta itemMeta = item.getItemMeta();
-                    itemMeta.setDisplayName(shops.get(index).getAmount() + " " + item.getType().name().replace("_", " "));
-                    itemMeta.setLocalizedName(shops.get(index).getId());
-                    ArrayList<String> lore = new ArrayList<String>();
-                    lore.add(ChatColor.WHITE + shops.get(index).getOwner());
-                    lore.add(ChatColor.GREEN + shops.get(index).getPrice().toString());
-                    lore.add("Click to view");
+                        item.addEnchantments(shops.get(index).getEnchantments());
+                        ItemMeta itemMeta = item.getItemMeta();
+                        itemMeta.setDisplayName(shops.get(index).getAmount() + " " + item.getType().name().replace("_", " "));
+                        itemMeta.setLocalizedName(shops.get(index).getId());
+                        ArrayList<String> lore = new ArrayList<String>();
+                        lore.add(ChatColor.WHITE + shops.get(index).getOwner());
+                        lore.add(ChatColor.GREEN + shops.get(index).getPrice().toString());
+                        lore.add("Click to view");
 
-                    itemMeta.setLore(lore);
-                    itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                        itemMeta.setLore(lore);
+                        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
-                    item.setItemMeta(itemMeta);
+                        item.setItemMeta(itemMeta);
 
-                    inventory.addItem(item);
+                        inventory.addItem(item);
 
-                    ////////////////////////
+                        ////////////////////////
+                    }
                 }
             }
         }

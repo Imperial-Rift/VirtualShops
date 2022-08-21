@@ -3,7 +3,10 @@ package dev.jdog.virtualshops;
 import dev.jdog.virtualshops.commands.AddChestCommand;
 import dev.jdog.virtualshops.commands.CreateShopCommand;
 import dev.jdog.virtualshops.commands.ShopsCommand;
+import dev.jdog.virtualshops.listeners.BreakBlockListener;
+import dev.jdog.virtualshops.listeners.EntityExplodeListener;
 import dev.jdog.virtualshops.listeners.MenuListener;
+import dev.jdog.virtualshops.listeners.PlayerInteractListener;
 import dev.jdog.virtualshops.menuManager.Menu;
 import dev.jdog.virtualshops.menuManager.PlayerMenuUtility;
 import dev.jdog.virtualshops.utils.ShopStorage;
@@ -39,6 +42,9 @@ public final class VirtualShops extends JavaPlugin {
         getCommand("addShopChest").setTabCompleter(new AddChestCommand());
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getServer().getPluginManager().registerEvents(new BreakBlockListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityExplodeListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
 
 
 

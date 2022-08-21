@@ -7,6 +7,8 @@ import dev.jdog.virtualshops.models.Shop;
 import dev.jdog.virtualshops.utils.ShopStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateShopMenu extends Menu {
     public CreateShopMenu(PlayerMenuUtility playerMenuUtility) {
@@ -66,14 +70,19 @@ public class CreateShopMenu extends Menu {
                 p.closeInventory();
                 break;
             case "confirm-btn":
-                new ShopStorage().createShop(new Shop(playerMenuUtility.getItem(), p.getName(), playerMenuUtility.getPrice(), playerMenuUtility.getAmount()));
+                Shop newShop = new Shop(playerMenuUtility.getItem(), playerMenuUtility.getEnchantments(), p.getName(), playerMenuUtility.getPrice(), playerMenuUtility.getAmount());
+                new ShopStorage().createShop(newShop);
                 p.sendMessage(ChatColor.GOLD + "Shop successfully created! Use /addshopchest <shop> while looking at a chest to add a shop chest.");
+                p.sendMessage("Shop id: " + newShop.getId());
                 p.closeInventory();
 
                 break;
             default:
                 Material item = e.getCurrentItem().getType();
+                Map<Enchantment, Integer> enchantments = e.getCurrentItem().getEnchantments();
+
                 playerMenuUtility.setItem(item);
+                playerMenuUtility.setEnchantments(enchantments);
                 menu.open();
                 break;
         }
@@ -87,6 +96,8 @@ public class CreateShopMenu extends Menu {
         ItemStack item = new ItemStack(Material.BARRIER);
         if (playerMenuUtility.getItem() != null) {
             item = new ItemStack(playerMenuUtility.getItem());
+            item.addEnchantments(playerMenuUtility.getEnchantments());
+
         }
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setLocalizedName("item-display");

@@ -1,14 +1,20 @@
 package dev.jdog.virtualshops.menuManager;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerMenuUtility {
 
     private Player owner;
-    private Integer price = 0;
-    private Integer amount = 0;
+    private Integer price = 1;
+    private Integer amount = 1;
     private Material item;
+
+    private Map<Enchantment, Integer> enchantments;
 
     private String shopId;
 
@@ -30,6 +36,10 @@ public class PlayerMenuUtility {
 
     public Material getItem() {
         return item;
+    }
+
+    public Map<Enchantment, Integer> getEnchantments() {
+        return enchantments;
     }
 
     public String getShopId() {
@@ -54,6 +64,10 @@ public class PlayerMenuUtility {
 
     public void setItem(Material item) {
         this.item = item;
+    }
+
+    public void setEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.enchantments = enchantments;
     }
 
     public void setShopId(String shopId) {

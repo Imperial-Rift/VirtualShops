@@ -19,6 +19,7 @@ public class ShopStorage {
 
     public void createShop(Shop shop) {
         shops.add(shop);
+        shop.getEnchantments();
 //        System.out.println(shops);
         try {
             save();
@@ -82,8 +83,15 @@ public class ShopStorage {
             Integer itemsNeeded = shop.getAmount();
             for (int i = 0; i < items.length; i++) {
                 ItemStack is = items[i];
+//                System.out.println(is);
                 if(is != null) {
-                    if (is.getType() == shop.getItem()) {
+                    System.out.println(is.getType());
+                    System.out.println(shop.getItem());
+                    System.out.println(shop.getEnchantments());
+                    System.out.println(is.getEnchantments());
+                    if (is.getType() == shop.getItem() && is.getEnchantments().equals(shop.getEnchantments())) {
+                        System.out.println("ran1");
+                        System.out.println(itemsNeeded + " - " + is.getAmount());
                         if (itemsNeeded > is.getAmount()) {
                             if (i == items.length-1) {
                                 return false;
@@ -91,10 +99,10 @@ public class ShopStorage {
 
                             itemsNeeded -= is.getAmount();
                         } else {
-                            Integer leftover = is.getAmount() - itemsNeeded;
+//                            Integer leftover = is.getAmount() - itemsNeeded;
 
 //                                is.setAmount(leftover);
-
+                            System.out.println("ran");
                             break;
                         }
                     }
