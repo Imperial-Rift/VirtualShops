@@ -54,6 +54,15 @@ public class ShopStorage {
         return null;
     }
 
+    public void deleteShop(String id) {
+        shops.removeIf(shop -> shop.getId().equals(id));
+        try {
+            save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean addShopChest (Location location, String id) {
         for (Shop shop: shops) {
             if (shop.getId().equals(id)) {
@@ -83,15 +92,10 @@ public class ShopStorage {
             Integer itemsNeeded = shop.getAmount();
             for (int i = 0; i < items.length; i++) {
                 ItemStack is = items[i];
-//                System.out.println(is);
                 if(is != null) {
-                    System.out.println(is.getType());
-                    System.out.println(shop.getItem());
-                    System.out.println(shop.getEnchantments());
-                    System.out.println(is.getEnchantments());
+
                     if (is.getType() == shop.getItem() && is.getEnchantments().equals(shop.getEnchantments())) {
-                        System.out.println("ran1");
-                        System.out.println(itemsNeeded + " - " + is.getAmount());
+
                         if (itemsNeeded > is.getAmount()) {
                             if (i == items.length-1) {
                                 return false;
@@ -102,7 +106,6 @@ public class ShopStorage {
 //                            Integer leftover = is.getAmount() - itemsNeeded;
 
 //                                is.setAmount(leftover);
-                            System.out.println("ran");
                             break;
                         }
                     }
@@ -119,7 +122,6 @@ public class ShopStorage {
 
     public void loadShops() throws IOException {
         Gson gson = new Gson();
-        System.out.println(VirtualShops.getPlugin().getDataFolder());
         File file = new File(VirtualShops.getPlugin().getDataFolder().getAbsolutePath() + "/shops.json");
         if (file.exists()){
             Reader reader = new FileReader(file);

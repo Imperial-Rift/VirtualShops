@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class CreateShopMenu extends Menu {
                     playerMenuUtility.increasePrice();
                     menu.open();
                 } else if (e.getClick().equals(ClickType.RIGHT)) {
-                    if (playerMenuUtility.getPrice() > 1) {
+                    if (playerMenuUtility.getPrice() - playerMenuUtility.getRate() > 0) {
                         playerMenuUtility.decreasePrice();
                         menu.open();
                     }
@@ -55,25 +56,61 @@ public class CreateShopMenu extends Menu {
                 break;
             case "amount-btn":
                 if (e.getClick().equals(ClickType.LEFT)) {
-                    if (playerMenuUtility.getAmount() < 64) {
+                    if (playerMenuUtility.getAmount() + playerMenuUtility.getRate() < 65) {
                         playerMenuUtility.increaseAmount();
                         menu.open();
                     }
                 } else if (e.getClick().equals(ClickType.RIGHT)) {
-                    if (playerMenuUtility.getPrice() > 1) {
-                        playerMenuUtility.decreasePrice();
+                    if (playerMenuUtility.getAmount() - playerMenuUtility.getRate() > 0) {
+                        playerMenuUtility.decreaseAmount();
                         menu.open();
                     }
                 }
+                break;
+            case "rate-btn":
+                if (e.getClick().equals(ClickType.LEFT)) {
+                    if (playerMenuUtility.getRate() < 100) {
+                        playerMenuUtility.increaseRate();
+                        menu.open();
+                    }
+                } else if (e.getClick().equals(ClickType.RIGHT)) {
+                    if (playerMenuUtility.getRate() > 1) {
+                        playerMenuUtility.decreaseRate();
+                        menu.open();
+                    }
+                }
+                break;
+            case "servershop-btn":
+                playerMenuUtility.setIsServerShop(!playerMenuUtility.getIsServerShop());
+                menu.open();
                 break;
             case "cancel-btn":
                 p.closeInventory();
                 break;
             case "confirm-btn":
-                Shop newShop = new Shop(playerMenuUtility.getItem(), playerMenuUtility.getEnchantments(), p.getName(), playerMenuUtility.getPrice(), playerMenuUtility.getAmount());
+                if (playerMenuUtility.getItem() != null) {
+                    if (playerMenuUtility.getItem() == Material.BARRIER) {
+                        p.sendMessage(ChatColor.DARK_RED + "You must select an item to sell!");
+                        break;
+                    }
+                } else {
+                    p.sendMessage(ChatColor.DARK_RED + "You must select an item to sell!");
+                    break;
+                }
+
+                String owner = p.getName();
+                if (playerMenuUtility.getIsServerShop()) {
+                    owner = "Server";
+                }
+                Shop newShop = new Shop(playerMenuUtility.getItem(), playerMenuUtility.getEnchantments(), owner, playerMenuUtility.getIsServerShop(), playerMenuUtility.getPrice(), playerMenuUtility.getAmount());
                 new ShopStorage().createShop(newShop);
-                p.sendMessage(ChatColor.GOLD + "Shop successfully created! Use /addshopchest <shop> while looking at a chest to add a shop chest.");
-                p.sendMessage("Shop id: " + newShop.getId());
+                if (newShop.getIsServerShop()) {
+                    p.sendMessage(ChatColor.GOLD + "Server shop successfully created");
+                } else {
+                    p.sendMessage(ChatColor.GOLD + "Shop successfully created! Use /addshopchest <shop> while looking at a chest to add a shop chest.");
+                    p.sendMessage("Shop id: " + newShop.getId());
+                }
+
                 p.closeInventory();
 
                 break;
@@ -103,7 +140,7 @@ public class CreateShopMenu extends Menu {
         itemMeta.setLocalizedName("item-display");
         item.setItemMeta(itemMeta);
 
-        ItemStack price = new ItemStack(Material.GOLD_INGOT);
+        ItemStack price = new ItemStack(Material.LIME_CONCRETE);
         ItemMeta priceMeta = price.getItemMeta();
         priceMeta.setDisplayName(ChatColor.GREEN + "Price");
         ArrayList<String> priceLore = new ArrayList<String>();
@@ -114,7 +151,7 @@ public class CreateShopMenu extends Menu {
         priceMeta.setLocalizedName("price-btn");
         price.setItemMeta(priceMeta);
 
-        ItemStack amount = new ItemStack(Material.IRON_INGOT);
+        ItemStack amount = new ItemStack(Material.BLUE_CONCRETE);
         ItemMeta amountMeta = amount.getItemMeta();
         amountMeta.setDisplayName(ChatColor.GREEN + "Amount");
         ArrayList<String> amountLore = new ArrayList<String>();
@@ -124,6 +161,29 @@ public class CreateShopMenu extends Menu {
         amountMeta.setLore(amountLore);
         amountMeta.setLocalizedName("amount-btn");
         amount.setItemMeta(amountMeta);
+
+        ItemStack rate = new ItemStack(Material.YELLOW_CONCRETE);
+        ItemMeta rateMeta = amount.getItemMeta();
+        rateMeta.setDisplayName(ChatColor.GREEN + "Rate");
+        ArrayList<String> rateLore = new ArrayList<String>();
+        rateLore.add(playerMenuUtility.getRate().toString());
+        rateLore.add(ChatColor.DARK_PURPLE + "Left click to increase");
+        rateLore.add(ChatColor.DARK_PURPLE + "Right click to decrease");
+        rateMeta.setLore(rateLore);
+        rateMeta.setLocalizedName("rate-btn");
+        rate.setItemMeta(rateMeta);
+
+
+        ItemStack serverShop = new ItemStack(Material.EMERALD);
+        ItemMeta serverShopItemMeta = serverShop.getItemMeta();
+        serverShopItemMeta.setDisplayName(ChatColor.GREEN + "Server Shop");
+        ArrayList<String> serverShopLore = new ArrayList<String>();
+        serverShopLore.add(playerMenuUtility.getIsServerShop().toString());
+        serverShopLore.add(ChatColor.DARK_PURPLE + "Left click to change");
+        serverShopItemMeta.setLore(serverShopLore);
+        serverShopItemMeta.setLocalizedName("servershop-btn");
+        serverShop.setItemMeta(serverShopItemMeta);
+
 
         ItemStack cancel = new ItemStack(Material.RED_CONCRETE);
         ItemMeta cancelMeta = cancel.getItemMeta();
@@ -139,7 +199,10 @@ public class CreateShopMenu extends Menu {
 
 
 
-        ItemStack[] items = {null, null, null, item, price, amount, null, null, null, null, null, null, null, null, null, null, null, null, cancel, null, null, null, null, null, null, null, confirm};
+        ItemStack[] items = {null, null, item, price, amount, rate, null, null, null, null, null, null, null, null, null, null, null, null, cancel, null, null, null, null, null, null, null, confirm};
+        if (player.isOp()) {
+            items[6] = serverShop;
+        }
 
         inventory.setContents(items);
     }

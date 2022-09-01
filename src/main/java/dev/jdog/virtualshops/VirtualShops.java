@@ -1,8 +1,6 @@
 package dev.jdog.virtualshops;
 
-import dev.jdog.virtualshops.commands.AddChestCommand;
-import dev.jdog.virtualshops.commands.CreateShopCommand;
-import dev.jdog.virtualshops.commands.ShopsCommand;
+import dev.jdog.virtualshops.commands.*;
 import dev.jdog.virtualshops.listeners.BreakBlockListener;
 import dev.jdog.virtualshops.listeners.EntityExplodeListener;
 import dev.jdog.virtualshops.listeners.MenuListener;
@@ -17,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 public final class VirtualShops extends JavaPlugin {
 
@@ -35,11 +34,15 @@ public final class VirtualShops extends JavaPlugin {
             return;
         }
         plugin = this;
-        System.out.println("Starting up");
+        getLogger().info("Starting up");
         getCommand("shops").setExecutor(new ShopsCommand());
         getCommand("createShop").setExecutor(new CreateShopCommand());
         getCommand("addShopChest").setExecutor(new AddChestCommand());
         getCommand("addShopChest").setTabCompleter(new AddChestCommand());
+        getCommand("clearShopChest").setExecutor(new ClearShopChestCommand());
+        getCommand("deleteShop").setExecutor(new DeleteShopCommand());
+        getCommand("listShops").setExecutor(new ListShopsCommand());
+
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new BreakBlockListener(), this);

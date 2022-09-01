@@ -13,21 +13,16 @@ import org.bukkit.block.TileState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import sun.tools.jconsole.Tab;
 
-import java.util.ArrayList;
-import java.util.List;
+public class DeleteShopCommand implements CommandExecutor {
 
-public class AddChestCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
         Block block = p.getTargetBlock(null, 7);
-
 
         if (block.getType().equals(Material.CHEST)) {
             BlockState blockState = block.getState();
@@ -38,34 +33,20 @@ public class AddChestCommand implements TabExecutor {
                 PersistentDataContainer container = tileState.getPersistentDataContainer();
 
                 if (container.has(new NamespacedKey(VirtualShops.getPlugin(), "shop"), PersistentDataType.STRING)) {
-                    p.sendMessage(ChatColor.DARK_RED + "This chest is already assigned to a shop!");
-                } else {
-
-                    container.set(new NamespacedKey(VirtualShops.getPlugin(), "shop"), PersistentDataType.STRING, args[0]);
+                    String id = container.get(new NamespacedKey(VirtualShops.getPlugin(), "shop"), PersistentDataType.STRING);
+//                    Remove shop
+                    container.remove(new NamespacedKey(VirtualShops.getPlugin(), "shop"));
                     tileState.update();
 
-                    Location location = block.getLocation();
-                    new ShopStorage().addShopChest(location, args[0]);
-                    p.sendMessage(ChatColor.GOLD + "Shop chest added.");
+                    new ShopStorage().deleteShop(id);
+                    p.sendMessage(ChatColor.GOLD + "Shop deleted.");
+
+                } else {
+                    p.sendMessage(ChatColor.RED + "That is not a shop!");
                 }
             }
         }
+
         return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 1) {
-            ArrayList<Shop> shops = new ShopStorage().getShopsByPlayer(sender.getName());
-
-            ArrayList<String> ids = new ArrayList<>();
-
-            for (Shop shop: shops) {
-                ids.add(shop.getId());
-            }
-
-            return ids;
-        }
-        return null;
     }
 }

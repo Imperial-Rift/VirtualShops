@@ -9,6 +9,15 @@ commands:
   createShop:
     description: Create a new shop.
     usage: /<command>
+  listShops:
+    description: Get all of your created shops.
+    usage: /<command>
+  deleteShop:
+    description: Look at the shop you want to delete.
+    usage: /<command>
   addShopChest:
     description: Add a chest to your shop.
     usage: /<command>
+  clearShopChest:
+      description: Clear shop chest data.
+      usage: /<command>

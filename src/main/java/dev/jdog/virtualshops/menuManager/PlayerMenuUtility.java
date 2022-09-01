@@ -10,8 +10,11 @@ import java.util.Map;
 public class PlayerMenuUtility {
 
     private Player owner;
+    private Boolean isServerShop = false;
     private Integer price = 1;
     private Integer amount = 1;
+
+    private Integer rate = 1;
     private Material item;
 
     private Map<Enchantment, Integer> enchantments;
@@ -26,12 +29,20 @@ public class PlayerMenuUtility {
         return owner;
     }
 
+    public Boolean getIsServerShop() {
+        return isServerShop;
+    }
+
     public Integer getPrice() {
         return price;
     }
 
     public Integer getAmount() {
         return amount;
+    }
+
+    public Integer getRate() {
+        return rate;
     }
 
     public Material getItem() {
@@ -46,20 +57,32 @@ public class PlayerMenuUtility {
         return shopId;
     }
 
+    public void setIsServerShop(Boolean serverShop) {
+        isServerShop = serverShop;
+    }
+
     public void increasePrice() {
-        this.price++;
+        this.price+=rate;
     }
 
     public void increaseAmount() {
-        this.amount++;
+        this.amount+=rate;
     }
 
     public void decreasePrice() {
-        this.price--;
+        this.price-=rate;
     }
 
     public void decreaseAmount() {
-        this.amount--;
+        this.amount-=rate;
+    }
+
+    public void decreaseRate() {
+        this.rate--;
+    }
+
+    public void increaseRate() {
+        this.rate++;
     }
 
     public void setItem(Material item) {

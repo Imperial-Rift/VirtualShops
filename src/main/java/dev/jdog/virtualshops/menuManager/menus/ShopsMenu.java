@@ -97,16 +97,16 @@ public class ShopsMenu extends PaginatedMenu {
 ////
 ////                    playerMeta.getPersistentDataContainer().set(new NamespacedKey(VirtualShops.getPlugin(), "uuid"), PersistentDataType.STRING, players.get(index).getUniqueId().toString());
 //                    playerItem.setItemMeta(playerMeta);
-                    if (shops.get(index).getChestWorld() != null) {
+                    if (shops.get(index).getChestWorld() != null || shops.get(index).getIsServerShop()) {
                         ItemStack item = new ItemStack(shops.get(index).getItem());
 
                         item.addEnchantments(shops.get(index).getEnchantments());
                         ItemMeta itemMeta = item.getItemMeta();
-                        itemMeta.setDisplayName(shops.get(index).getAmount() + " " + item.getType().name().replace("_", " "));
+                        itemMeta.setDisplayName(ChatColor.RESET + "" + shops.get(index).getAmount() + " " + item.getType().name().replace("_", " "));
                         itemMeta.setLocalizedName(shops.get(index).getId());
                         ArrayList<String> lore = new ArrayList<String>();
                         lore.add(ChatColor.WHITE + shops.get(index).getOwner());
-                        lore.add(ChatColor.GREEN + shops.get(index).getPrice().toString());
+                        lore.add(ChatColor.GREEN + "$" + shops.get(index).getPrice().toString());
                         lore.add("Click to view");
 
                         itemMeta.setLore(lore);

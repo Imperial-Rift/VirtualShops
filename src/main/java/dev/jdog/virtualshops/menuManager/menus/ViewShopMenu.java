@@ -47,11 +47,11 @@ public class ViewShopMenu extends Menu {
 
         switch (e.getCurrentItem().getType()) {
             case GOLD_INGOT:
-                if (player.getName().equals(shop.getOwner())) {
-                    player.sendMessage(ChatColor.DARK_RED + "You can't buy from your own shop!");
-                    player.closeInventory();
-                    break;
-                }
+//                if (player.getName().equals(shop.getOwner())) {
+//                    player.sendMessage(ChatColor.DARK_RED + "You can't buy from your own shop!");
+//                    player.closeInventory();
+//                    break;
+//                }
                 ItemStack item = new ItemStack(shop.getItem());
                 item.setAmount(shop.getAmount());
                 item.addEnchantments(shop.getEnchantments());
@@ -61,47 +61,54 @@ public class ViewShopMenu extends Menu {
                     player.sendMessage(ChatColor.DARK_RED + "Inventory full.");
                     break;
                 }
+//                System.out.println("thing " + shop.getIsServerShop());
+                if (!shop.getIsServerShop()) {
+//                    System.out.println("running");
 
-                Block block = Bukkit.getServer().getWorld(shop.getChestWorld()).getBlockAt(shop.getChest());
-                if (block.getState() instanceof Chest) {
-                    Chest chest = (Chest) block.getState();
-                    Inventory chestInv = chest.getInventory();
-                    ItemStack[] items = chestInv.getContents();
+                    Block block = Bukkit.getServer().getWorld(shop.getChestWorld()).getBlockAt(shop.getChest());
+                    if (block.getState() instanceof Chest) {
+                        Chest chest = (Chest) block.getState();
+                        Inventory chestInv = chest.getInventory();
+                        ItemStack[] items = chestInv.getContents();
 
-                    Integer itemsNeeded = shop.getAmount();
-                    for (ItemStack is : items) {
-                        if (is != null) {
-                            if (is.getType() == shop.getItem() && is.getEnchantments() == shop.getEnchantments()) {
-                                if (itemsNeeded > 0) {
-                                    if (itemsNeeded > is.getAmount()) {
-                                        is.setAmount(0);
-                                        itemsNeeded -= is.getAmount();
-                                    } else {
-                                        Integer leftover = is.getAmount() - itemsNeeded;
+                        Integer itemsNeeded = shop.getAmount();
+                        for (ItemStack is : items) {
+                            if (is != null) {
+                                if (is.getType().equals(shop.getItem()) && is.getEnchantments().equals(shop.getEnchantments())) {
+                                    if (itemsNeeded > 0) {
+                                        if (itemsNeeded > is.getAmount()) {
+                                            is.setAmount(0);
+                                            itemsNeeded -= is.getAmount();
+                                        } else {
+                                            Integer leftover = is.getAmount() - itemsNeeded;
 
-                                        is.setAmount(leftover);
+                                            is.setAmount(leftover);
 
-                                        break;
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        chestInv.setContents(items);
                     }
-
-                    chestInv.setContents(items);
-
-                    economy.withdrawPlayer(player, shop.getPrice());
-                    economy.depositPlayer(VirtualShops.getPlugin().getServer().getPlayer(shop.getOwner()), shop.getPrice());
-
-                    player.sendMessage(ChatColor.GOLD + "Successfully bought " + ChatColor.WHITE + shop.getAmount() + " " +  shop.getItem().name().replace("_", " ") + ChatColor.GOLD + " from " + shop.getOwner());
-
-                    ViewShopMenu menu = new ViewShopMenu(playerMenuUtility);
-                    menu.open();
                 }
 
-            case ARROW:
-                ShopsMenu menu = new ShopsMenu(playerMenuUtility);
+
+
+                economy.withdrawPlayer(player, shop.getPrice());
+                if (!shop.getIsServerShop()) {
+                    economy.depositPlayer(VirtualShops.getPlugin().getServer().getPlayer(shop.getOwner()), shop.getPrice());
+                }
+
+                player.sendMessage(ChatColor.GOLD + "Successfully bought " + ChatColor.WHITE + shop.getAmount() + " " + shop.getItem().name().replace("_", " ") + ChatColor.GOLD + " from " + shop.getOwner());
+
+                ViewShopMenu menu = new ViewShopMenu(playerMenuUtility);
                 menu.open();
+            case ARROW:
+                ShopsMenu shopsMenu = new ShopsMenu(playerMenuUtility);
+                shopsMenu.open();
         }
 
     }
@@ -138,10 +145,13 @@ public class ViewShopMenu extends Menu {
         noFundsMeta.setLore(noFundsLore);
         noFunds.setItemMeta(noFundsMeta);
 
-        if (!new ShopStorage().isInStock(shop.getId())) {
-            buy = out;
-        } else if (economy.getBalance(player) < shop.getPrice()) {
+        if (economy.getBalance(player) < shop.getPrice()) {
             buy = noFunds;
+        }
+        if (!shop.getIsServerShop()) {
+            if (!new ShopStorage().isInStock(shop.getId())) {
+                buy = out;
+            }
         }
 
 

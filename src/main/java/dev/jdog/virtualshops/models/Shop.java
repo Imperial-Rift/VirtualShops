@@ -1,5 +1,6 @@
 package dev.jdog.virtualshops.models;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import dev.jdog.virtualshops.VirtualShops;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -14,6 +15,8 @@ public class Shop {
     private Material item;
     private HashMap<String, Integer> enchantments;
     private String owner;
+
+    private Boolean isServerShop;
     private Integer price;
     private Integer amount;
     private String id;
@@ -22,7 +25,7 @@ public class Shop {
     private Integer chestZ;
     private String chestWorld;
 
-    public Shop(Material item, Map<Enchantment, Integer> enchantments, String owner, Integer price, Integer amount) {
+    public Shop(Material item, Map<Enchantment, Integer> enchantments, String owner, Boolean isServerShop, Integer price, Integer amount) {
         this.item = item;
 
         HashMap<String, Integer> newEnchants = new HashMap<>();
@@ -35,6 +38,7 @@ public class Shop {
         }
         this.enchantments = newEnchants;
         this.owner = owner;
+        this.isServerShop = isServerShop;
         this.price = price;
         this.amount = amount;
         this.id = UUID.randomUUID().toString();
@@ -61,6 +65,10 @@ public class Shop {
 
     public String getOwner() {
         return owner;
+    }
+
+    public Boolean getIsServerShop() {
+        return isServerShop;
     }
 
     public Integer getPrice() {
